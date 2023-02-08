@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "788654869280",
+    "project_id": "pokesex",
+    "storage_bucket": "pokesex.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788654869280:android:c0c86912cc055df7772545",
+        "android_client_info": {
+          "package_name": "com.example.practicafirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "788654869280-8s2pvf48psg2i2h61d0gi2970h9bkuea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx0UDGD-qbgM-amPpECoMsLznPc4XsYsk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "788654869280-8s2pvf48psg2i2h61d0gi2970h9bkuea.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
