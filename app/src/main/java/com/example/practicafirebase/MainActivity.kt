@@ -3,13 +3,19 @@ package com.example.practicafirebase
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.widget.Button
+import android.widget.PopupMenu
 import android.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
@@ -137,6 +143,27 @@ class MainActivity : AppCompatActivity() {
         val searchItem = menu.findItem(R.id.search)
         val searchView = searchItem.actionView as SearchView?
         val basura = menu.findItem(R.id.borrar)
+
+        basura.setOnMenuItemClickListener {
+
+            var layoutDialogo = LayoutInflater.from(this)
+                .inflate(R.layout.layout_dialogo, null, false)
+            val dialogo = MaterialAlertDialogBuilder(MainActivity@this)
+
+            dialogo.setTitle("Introduzca el nombre del pokemon a borrar")
+            dialogo.setView(layoutDialogo)
+            dialogo.setPositiveButton("OK") { dialog, which ->
+                val nombre = layoutDialogo.findViewById<TextInputEditText>(R.id.dialogoNombre)
+                val borrarNombre = mapOf(
+                    "nombre" to FieldValue.delete()
+                )
+                conexion.collection("Pokemon").document(nombre.toString()).update(borrarNombre)
+            }
+            dialogo.setNegativeButton("Cancel", null)
+            dialogo.show()
+            true
+        }
+
         searchView!!.maxWidth = Int.MAX_VALUE
 
         searchView.setOnCloseListener {
