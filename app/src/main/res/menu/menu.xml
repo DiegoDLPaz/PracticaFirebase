@@ -23,4 +23,10 @@
         >
     </item>
 
+    <item
+        android:id="@+id/sms"
+        android:icon="@drawable/sms"
+        android:title="SMS"
+        app:showAsAction="always"
+    />
 </menu>

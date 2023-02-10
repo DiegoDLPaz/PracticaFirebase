@@ -59,7 +59,7 @@ class insertarPokemon : AppCompatActivity() {
 
             nombre = infoNombre.text.toString()
             nivel = infoNivel.text.toString().toInt()
-            perso = infoNivel.text.toString()
+            perso = infoPerso.text.toString()
 
             if (nombre==null || nivel == null || perso == null || tipo == null){
                 Toast.makeText(this,"Por favor no se deje datos por introducir",Toast.LENGTH_SHORT).show()
