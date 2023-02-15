@@ -1,31 +1,30 @@
 package com.example.practicafirebase
 
-import android.annotation.SuppressLint
-import android.content.Context
+
+import android.Manifest.permission.SEND_SMS
+import android.Manifest
 import android.content.Intent
-import android.os.Build
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.telephony.SmsManager
-import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.widget.Button
-import android.widget.PopupMenu
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
+import android.app.Activity
+import android.os.Build
 import com.google.firebase.firestore.Query
 
 class MainActivity : AppCompatActivity() {
@@ -41,10 +40,12 @@ class MainActivity : AppCompatActivity() {
     lateinit var conexion : FirebaseFirestore
     lateinit var botonnivel: FloatingActionButton
     var arribaActivado: Boolean = false
+    var smsManager :SmsManager = SmsManager.getDefault()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         materialTool = findViewById(R.id.toolbar)
 
@@ -145,7 +146,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("ServiceCast")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu,menu)
 
@@ -157,7 +157,8 @@ class MainActivity : AppCompatActivity() {
 
         sms.setOnMenuItemClickListener {
 
-            val smsManager = SmsManager.getDefault()
+
+
 
             var layoutSms = LayoutInflater.from(this)
                 .inflate(R.layout.layout_sms, null, false)
@@ -173,9 +174,11 @@ class MainActivity : AppCompatActivity() {
                 smsManager.sendTextMessage(telefono.text.toString(),null,mensaje.text.toString(),null,null)
 
                 Toast.makeText(applicationContext,"Mensaje Enviado",Toast.LENGTH_SHORT).show()
-
             }
+            dialogo.setNegativeButton("Cancel", null)
+            dialogo.show()
             true
+
         }
 
 
@@ -303,4 +306,7 @@ class MainActivity : AppCompatActivity() {
 
         return true
     }
+
+
+
 }
