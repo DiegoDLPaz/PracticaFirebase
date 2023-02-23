@@ -1,22 +1,29 @@
 package com.example.practicafirebase
 
+import android.content.ContentValues.TAG
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import com.google.firebase.firestore.FirebaseFirestore
 
-class insertarPokemon : AppCompatActivity() {
+class InsertarPokemon : AppCompatActivity() {
 
     lateinit var conexion : FirebaseFirestore
     lateinit var nombre: String
     lateinit var perso: String
     lateinit var tipo: String
     lateinit var insertar : Button
+    var usuario: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_insertar_pokemon)
+
+        val intentT : Intent = intent
+        usuario = intentT.getStringExtra("usuario").toString()
 
         var spinner : Spinner = findViewById(R.id.spinner)
 
@@ -24,9 +31,9 @@ class insertarPokemon : AppCompatActivity() {
         var infoPerso : TextView = findViewById(R.id.textoPersonalidad)
         var infoNivel : TextView = findViewById(R.id.textoNivel)
 
-        insertar=findViewById(R.id.insertar)
+        insertar=findViewById(R.id.actualizar)
 
-        var nivel: Int=0
+        var nivel: Int
 
         var listaTipos = ArrayList<String?>()
 
@@ -58,16 +65,25 @@ class insertarPokemon : AppCompatActivity() {
         insertar.setOnClickListener{
 
             nombre = infoNombre.text.toString()
-            nivel = infoNivel.text.toString().toInt()
             perso = infoPerso.text.toString()
 
-            if (nombre==null || nivel == null || perso == null || tipo == null){
+            if (nombre.isEmpty() || infoNivel.text.isEmpty() || perso.isEmpty() || tipo.isEmpty()){
                 Toast.makeText(this,"Por favor no se deje datos por introducir",Toast.LENGTH_SHORT).show()
-            }else{
-                val p = Pokemon(nombre, tipo, nivel , perso)
-                conexion.collection("Pokemon").add(p)
-                finish()
+                return@setOnClickListener
             }
+
+            nivel = Integer.parseInt(infoNivel.text.toString())
+            val p = Pokemon(nombre, tipo, nivel , perso, usuario)
+
+            conexion.collection("Pokemon").add(p)
+                .addOnSuccessListener { documentReference ->
+                    Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Error adding document", e)
+                    Toast.makeText(this, "Error al guardar el Pokemon", Toast.LENGTH_SHORT).show()
+                }
         }
 
     }

@@ -1,44 +1,36 @@
 package com.example.practicafirebase
 
 
-import android.Manifest.permission.SEND_SMS
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
-import android.widget.Button
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
-import android.app.Activity
-import android.os.Build
 import com.google.firebase.firestore.Query
 
-class MainActivity : AppCompatActivity() {
+class PantallaPokemon : AppCompatActivity() {
 
     lateinit var adaptadorPokemon: Adaptador
     lateinit var recyclerPokemon: RecyclerView
     lateinit var listaPokemon: ArrayList<Pokemon>
     lateinit var listaBusqueda: ArrayList<Pokemon>
     lateinit var listaArriba: ArrayList<Pokemon>
-    lateinit var botonborrar: Button
     lateinit var botonanadir: FloatingActionButton
     lateinit var materialTool: MaterialToolbar
     lateinit var conexion : FirebaseFirestore
     lateinit var botonnivel: FloatingActionButton
+    lateinit var usuario: String
     var arribaActivado: Boolean = false
     var smsManager :SmsManager = SmsManager.getDefault()
 
@@ -46,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val intentT : Intent = intent
+        usuario = intentT.getStringExtra("eMail").toString()
 
         materialTool = findViewById(R.id.toolbar)
 
@@ -68,17 +62,16 @@ class MainActivity : AppCompatActivity() {
 
         MostrarFireBase()
 
-        adaptadorPokemon = Adaptador(listaPokemon)
+        adaptadorPokemon = Adaptador(listaPokemon, usuario)
         recyclerPokemon.adapter = adaptadorPokemon
         recyclerPokemon.layoutManager = GridLayoutManager(this,1)
 
         conexion.collection("Pokemon").whereEqualTo("nombre","Pepe")
 
         botonanadir.setOnClickListener{
-
-            var miIntent = Intent(this,insertarPokemon::class.java)
+            val miIntent = Intent(this,InsertarPokemon::class.java)
+            miIntent.putExtra("usuario", usuario)
             startActivity(miIntent)
-
         }
 
         botonnivel.setOnClickListener{
@@ -93,8 +86,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun MostrarFireBase() {
-        val funcionBuscar = conexion.collection("Pokemon").addSnapshotListener{
-                value,error ->
+        val funcionBuscar = conexion.collection("Pokemon").addSnapshotListener{ value,error ->
 
             if (error==null){
                 if (value!=null){
@@ -105,10 +97,7 @@ class MainActivity : AppCompatActivity() {
                         val p : Pokemon? = documento.toObject( Pokemon::class.java)
                         if (p != null) {
                             p.id =  documento.id
-                        }
-                        if (p != null) {
                             listaPokemon.add(p)
-
                         }
                     }
                     //tell the recycler view that all the old items are gone
@@ -123,25 +112,25 @@ class MainActivity : AppCompatActivity() {
     fun MostrarFireBasePorNivel() {
         val funcionBuscar = conexion.collection("Pokemon")
             .orderBy("nivel",Query.Direction.DESCENDING).get().addOnSuccessListener{ value ->
-            val coleccion = conexion.collection("Pokemon")
-                if (value!=null){
-                    var antes = listaPokemon.size
-                    listaPokemon.clear()
+        val coleccion = conexion.collection("Pokemon")
+            if (value!=null){
+                val antes = listaPokemon.size
+                listaPokemon.clear()
 
-                    for (documento in value.documents){
+                for (documento in value.documents){
 
-                        val p : Pokemon? = documento.toObject( Pokemon::class.java)
-                        if (p != null) {
-                            p.id =  documento.id
-                        }
-                        if (p != null) {
-                            listaPokemon.add(p)
-                        }
+                    val p : Pokemon? = documento.toObject( Pokemon::class.java)
+                    if (p != null) {
+                        p.id =  documento.id
                     }
-                    //tell the recycler view that all the old items are gone
-                    adaptadorPokemon.notifyItemRangeRemoved(0, antes);
-                    //tell the recycler view how many new items we added
-                    adaptadorPokemon.notifyItemRangeInserted(0, listaPokemon.size);
+                    if (p != null) {
+                        listaPokemon.add(p)
+                    }
+                }
+                //tell the recycler view that all the old items are gone
+                adaptadorPokemon.notifyItemRangeRemoved(0, antes);
+                //tell the recycler view how many new items we added
+                adaptadorPokemon.notifyItemRangeInserted(0, listaPokemon.size);
             }
         }
     }
@@ -157,10 +146,7 @@ class MainActivity : AppCompatActivity() {
 
         sms.setOnMenuItemClickListener {
 
-
-
-
-            var layoutSms = LayoutInflater.from(this)
+            val layoutSms = LayoutInflater.from(this)
                 .inflate(R.layout.layout_sms, null, false)
             val dialogo = MaterialAlertDialogBuilder(MainActivity@ this)
 
@@ -255,7 +241,7 @@ class MainActivity : AppCompatActivity() {
                             adaptadorPokemon.notifyItemRangeRemoved(0, antes);
                             //tell the recycler view how many new items we added
                             adaptadorPokemon.notifyItemRangeInserted(0, listaArriba.size)
-                            adaptadorPokemon = Adaptador(listaArriba)
+                            adaptadorPokemon = Adaptador(listaArriba, usuario)
                             recyclerPokemon.adapter = adaptadorPokemon
                         }
                     }
@@ -298,7 +284,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-                adaptadorPokemon = Adaptador(listaBusqueda)
+                adaptadorPokemon = Adaptador(listaBusqueda, usuario)
                 recyclerPokemon.adapter = adaptadorPokemon
                 return false
             }
